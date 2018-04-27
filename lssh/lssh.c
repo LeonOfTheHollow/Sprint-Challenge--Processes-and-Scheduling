@@ -113,6 +113,17 @@ int main(void)
             printf("You forked up!\n");
             exit(1);
         } else if (forkResponse == 0) {
+            if (!strcmp(args[0], "cd")) {
+                if (args_count != 2) {
+                    printf("Provide the appropriate number of arguments to cd!\n");
+                    continue;
+                } else {
+                    if (chdir(args[1]) < 0) {
+                        perror("chdir");
+                    };
+                    continue;
+                }
+            }
             execvp(args[0], args);
         } else {
             waitpid(forkResponse, childResponse, 0);
