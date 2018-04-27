@@ -62,6 +62,12 @@ int main(void)
     // How many command line args the user typed
     int args_count;
 
+    //Response from fork() call that begins process execution.
+    int forkResponse;
+
+    //Exit status report on child from waitpid()
+    int* childResponse;
+
     // Shell loops forever (until we tell it to exit)
     while (1) {
         // Print a prompt
@@ -101,7 +107,16 @@ int main(void)
         #endif
         
         /* Add your code for implementing the shell's logic here */
-        
+        forkResponse = fork();
+        //Exit with an error if there was a problem forking. Otherwise split up parent and child logic.
+        if (forkResponse < 0) {
+            printf("You forked up!\n");
+            exit(1);
+        } else if (forkResponse == 0) {
+            execvp(args[0], args);
+        } else {
+            waitpid(forkResponse, childResponse, 0);
+        }
     }
 
     return 0;
