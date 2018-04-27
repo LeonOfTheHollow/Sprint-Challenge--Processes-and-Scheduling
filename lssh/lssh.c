@@ -68,6 +68,9 @@ int main(void)
     //Exit status report on child from waitpid()
     int* childResponse;
 
+    //Flag for determining if a process should be run in the background.
+    int bgFlag = 0;
+
     // Shell loops forever (until we tell it to exit)
     while (1) {
         // Print a prompt
@@ -93,6 +96,11 @@ int main(void)
         // Exit the shell if args[0] is the built-in "exit" command
         if (strcmp(args[0], "exit") == 0) {
             break;
+        }
+        if (!strcmp(args[args_count-1], "&")) {
+            args[args_count-1] = NULL;
+            bgFlag = 1;
+            args_count--;
         }
 
         #if DEBUG
@@ -125,8 +133,10 @@ int main(void)
                 }
             }
             execvp(args[0], args);
-        } else {
+        } else if (!bgFlag) {
             waitpid(forkResponse, childResponse, 0);
+        } else {
+            bgFlag = 0;
         }
     }
 
